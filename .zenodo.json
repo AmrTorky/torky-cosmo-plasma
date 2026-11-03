@@ -1,7 +1,7 @@
 {
-  "title": "Amr Torky Autopoietic Continuum Engine - High-Energy Astrophysical Magnetohydrodynamics Engine",
+  "title": "Amr Torky Autopoietic Continuum Engine - Master Engine Appliance",
   "conceptdoi": "10.5281/zenodo.22785402",
   "creators": [{"name": "Torky, Amr", "orcid": "0009-0003-6539-8267", "affiliation": "Amr Torky Institute for Theory of Everything & Theory of Every Code"}],
-  "description": "High-Energy Astrophysical Magnetohydrodynamics & Relativistic Jet Regularization engine (torky-cosmo-plasma v24.0.0-GA).",
+  "description": "Production release of the Torky Engine Appliance and local Python IPC daemon bridge for deterministic benchmarks and hardware simulation (v24.0.0-GA).",
   "access_right": "open", "license": "apache-2.0", "upload_type": "software"
 }
