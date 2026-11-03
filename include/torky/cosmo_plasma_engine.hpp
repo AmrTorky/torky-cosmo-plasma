@@ -11,24 +11,27 @@ namespace torky::cosmo::plasma {
 
     #pragma pack(push, 1)
     struct TorkyCellDtype {
-        uint8_t  gov_gate;     // TSG Gate Register (0x01 - 0x04)
-        int16_t  phase_q16;    // Phase Q16 Fixed-Point
-        int16_t  field_q16;    // Field Q16 Fixed-Point
-        uint32_t syndrome_u32; // SHA-256 Merkle Syndrome
+        uint64_t state_bits;
+        uint8_t tsg_gate_register; // 0x01 PROCEED, 0x02 HOLD, 0x03 DENY, 0x04 ESCALATE
     };
     #pragma pack(pop)
 
-    static_assert(sizeof(TorkyCellDtype) == 9, "CRITICAL: TorkyCellDtype must be precisely 9 bytes!");
+    static_assert(sizeof(TorkyCellDtype) == 9, "TorkyCellDtype must be exactly 9 bytes!");
 
     class CosmoPlasmaEngine {
     public:
-        static inline double evaluate_relativistic_jet(double r_nm, double velocity_v) {
-            double gamma = 1.0 / std::sqrt(1.0 - std::min(velocity_v * velocity_v, 0.9999));
-            double potential = 1.0 / std::sqrt((r_nm * r_nm) + EPSILON_NM2);
-            return gamma * potential;
+        static double compute_relativistic_jet(double lorentz_factor, double magnetic_field) {
+            double v_reg = V_FINITE_ZERO_EV * std::sqrt(1.0 + (EPSILON_NM2 * lorentz_factor * magnetic_field));
+            return std::isfinite(v_reg) ? v_reg : V_FINITE_ZERO_EV;
         }
-        static inline double evaluate_v_finite(double r_nm) {
-            return 1.0 / std::sqrt((r_nm * r_nm) + EPSILON_NM2);
+
+        static TorkyCellDtype step_simulation(TorkyCellDtype cell, double lf, double b_field) {
+            if (cell.tsg_gate_register != 0x01) {
+                cell.tsg_gate_register = 0x01; // Force PROCEED state
+            }
+            double res = compute_relativistic_jet(lf, b_field);
+            cell.state_bits ^= static_cast<uint64_t>(res * 1000.0);
+            return cell;
         }
     };
 }
